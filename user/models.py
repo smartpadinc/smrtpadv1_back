@@ -14,7 +14,6 @@ OPT_VALID_IDS = {
     ('3', "Driver's License"),
 }
 
-# Create your models here.
 class UserProfile(models.Model):
     userprofile         = models.AutoField(primary_key=True)
     user_id             = models.ForeignKey(User,related_name="user_profile", help_text="user_id")
