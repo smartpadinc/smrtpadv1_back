@@ -5,7 +5,7 @@ from user import views as userview
 api_routers = routers.DefaultRouter()
 
 
-api_routers.register(r'sample-url', userview.UserProfileViewSet, 'user-profile')
+api_routers.register(r'users', userview.UserViewSet, 'users')
 
 urlpatterns = api_routers.urls
 
