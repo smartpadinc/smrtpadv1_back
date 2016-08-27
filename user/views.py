@@ -6,12 +6,16 @@ from django.http import HttpResponse
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
-
 from user import models as  mod
 from user import serializers as serializer
-from rest_framework import viewsets, mixins, filters, status
+#from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
+from rest_framework import viewsets, mixins, filters, status, permissions
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
+from django.contrib import admin
+admin.autodiscover()
 
 class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
