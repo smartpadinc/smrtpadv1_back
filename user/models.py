@@ -16,7 +16,7 @@ OPT_VALID_IDS = {
 
 class UserProfile(models.Model):
     userprofile         = models.AutoField(primary_key=True)
-    user_id             = models.ForeignKey(User,related_name="user_profile", help_text="user_id")
+    user                = models.ForeignKey(User,related_name="user_profile", help_text="user_id")
     first_name          = models.CharField(max_length=30, help_text="Firstname")
     middle_name         = models.CharField(max_length=5, null=True, blank=True, help_text="middle name")
     last_name           = models.CharField(max_length=30, help_text="lastname")
@@ -32,5 +32,5 @@ class UserProfile(models.Model):
     img_url             = models.CharField(max_length=20, null=True, blank=True, help_text="image filename")
     fb_url              = models.CharField(max_length=50, null=True, blank=True, help_text="facebook profile")
     date_created        = models.DateTimeField(auto_now=False, auto_now_add=True, help_text="Date the record was created")
-    last_modified       = models.ForeignKey(User,related_name="user_profile_last_updated", null=True, blank=True, help_text="User who last updated the profile")
-    last_modified_by    = models.DateTimeField(auto_now=True, auto_now_add=False, null=True, blank=True, help_text="Date the record was last edited.")
+    last_modified_by    = models.ForeignKey(User,related_name="user_profile_last_updated", null=True, blank=True, help_text="User who last updated the profile")
+    last_modified       = models.DateTimeField(auto_now=True, auto_now_add=False, null=True, blank=True, help_text="Date the record was last edited.")

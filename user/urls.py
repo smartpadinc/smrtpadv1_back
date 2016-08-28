@@ -2,12 +2,13 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from user import views as userview
 
-api_routers = routers.DefaultRouter()
+internal_routers = routers.DefaultRouter()
 
 
-api_routers.register(r'users', userview.UserViewSet, 'users')
+internal_routers.register(r'users', userview.UserViewSet, 'users')
+internal_routers.register(r'profile', userview.UserProfileViewSet, 'user-profile')
 
-urlpatterns = api_routers.urls
+urlpatterns = internal_routers.urls
 
 # http://tutorial.djangogirls.org/en/django_urls/
 
