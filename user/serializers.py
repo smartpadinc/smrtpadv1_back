@@ -12,9 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField('get_user_profile')
 
     def get_user_profile(self, obj):
-        #profile_queryset = model.UserProfile.objects.all().filter(user=request.user, status='A')
-        #serializer = AccountUserActiveSerializer(instance=accounts_queryset, many=True, context=self.context)
-        #query = model.UserProfile.objects.all().filter(user=obj.id)
         try:
            query = model.UserProfile.objects.values().get(user=obj.id)
 
