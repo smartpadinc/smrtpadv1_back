@@ -17,10 +17,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import admin
 admin.autodiscover()
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
     serializer_class = serializer.UserSerializer
     queryset = User.objects.all()
+    allowed_methods = ('GET','POST','PATCH',)
 
     def create(self, request, *args, **kwargs):
         if 'email' in request.data:
@@ -34,6 +35,9 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Lis
                 return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'responseMsg': "Email field is required.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def partial_update(self, request, *args, **kwargs):
+        print(request.data['username'])
 
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.UserProfile
