@@ -37,6 +37,23 @@ class UserManagementTestCase(TestCase):
 
         response = self.client.post(self.url['user'], self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['success'], 'true')
+
+    def test_ensure_correct_field_value_onsave(self):
+        self.client.login(username='testuser', password='testing')
+
+        self.data['username']   = 'Test'
+        self.data['email']      = 'leoangelo.dia123@gmail.com'
+
+        response = self.client.post(self.url['user'], self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        rd = response.data['data']
+        self.assertEqual(rd['username'], self.data['username'])
+        self.assertEqual(rd['email'], self.data['email'])
+        self.assertEqual(rd['first_name'], self.data['first_name'])
+        self.assertEqual(rd['last_name'], self.data['last_name'])
+        self.assertEqual(response.data['success'], 'true')
 
     def test_add_new_valid_account_unauthorized(self):
         self.data['username']   = 'Test2'
@@ -58,6 +75,22 @@ class UserManagementTestCase(TestCase):
 
         response = self.client.post(self.url['user'], self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['success'], 'false')
+
+    def test_add_new_valid_account_duplicate_username(self):
+        self.client.login(username='testuser', password='testing')
+
+        self.data['username']   = 'anothertest'
+        self.data['email']      = 'test1234@test.com'
+
+        self.client.post(self.url['user'], self.data, format='json')
+
+        self.data['username']   = 'anothertest'
+        self.data['email']      = 'test12345@test.com'
+
+        response = self.client.post(self.url['user'], self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['success'], 'false')
 
     def test_add_new_invalid_account_authorized(self):
         self.client.login(username='testuser', password='testing')
@@ -67,3 +100,4 @@ class UserManagementTestCase(TestCase):
 
         response = self.client.post(self.url['user'], self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['success'], 'false')
