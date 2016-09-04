@@ -5,7 +5,7 @@ from user import views as userview
 internal_routers = routers.DefaultRouter()
 
 
-internal_routers.register(r'users', userview.UserViewSet, 'users')
+internal_routers.register(r'accounts', userview.UserViewSet, 'users')
 internal_routers.register(r'profile', userview.UserProfileViewSet, 'user-profile')
 
 urlpatterns = internal_routers.urls
