@@ -10,6 +10,7 @@ from user import models as  mod
 from user import serializers as serializer
 #from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
 from rest_framework import viewsets, mixins, filters, status, permissions
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
@@ -61,6 +62,23 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 
         return query
 
+    @list_route(methods=['patch'],)
+    def change_password(self, request, pk=None):
+        user = User.objects.get(pk=self.request.user.id)
+
+        if user is not None and 'old_password' in request.data and 'new_password' in request.data:
+
+            old  = self.request.data['old_password']
+            new  = self.request.data['new_password']
+
+            if user.check_password(old):
+                user.set_password(new)
+                u.save()
+                return Response({'responseMsg': "Successfully changed account password.", 'success': 'true'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'responseMsg': "Invalid password.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
