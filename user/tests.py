@@ -19,7 +19,8 @@ class UserManagementTestCase(TestCase):
         token.save()
 
         self.url = {
-            'user' : '/api/user-management/users/',
+            'user': '/api/user/accounts/',
+            'user_change_password': '/api/user/accounts/change_password/',
         }
         self.data = {
             'username'      : '',
@@ -101,3 +102,18 @@ class UserManagementTestCase(TestCase):
         response = self.client.post(self.url['user'], self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['success'], 'false')
+
+    def test_changed_password(self):
+        self.client.login(username='testuser', password='testing')
+
+        self.data['username']   = 'anothertest'
+        self.data['email']      = 'test12345@test.com'
+        self.data['password']   = 'demo123'
+        response = self.client.post(self.url['user'], self.data, format='json')
+
+        self.data['old_password']   = 'demo123'
+        self.data['new_password']   = 'demo1234'
+
+        response = self.client.patch(self.url['user_change_password'], self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['success'], 'true')
