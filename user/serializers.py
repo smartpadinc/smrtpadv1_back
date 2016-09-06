@@ -5,10 +5,6 @@ from user import models as model
 
 
 class UserSerializer(serializers.ModelSerializer):
-
-    # def validate_email(self,value):
-    #     raise serializers.ValidationError("Validation is working")
-    #     return value
     profile = serializers.SerializerMethodField('get_user_profile')
 
     def get_user_profile(self, obj):

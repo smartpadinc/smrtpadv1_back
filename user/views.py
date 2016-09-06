@@ -22,7 +22,6 @@ admin.autodiscover()
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
     serializer_class = serializer.UserSerializer
-    queryset = User.objects.all()
     allowed_methods = ('GET','POST','PATCH',)
 
     def create(self, request, *args, **kwargs):
@@ -73,7 +72,7 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 
             if user.check_password(old):
                 user.set_password(new)
-                u.save()
+                user.save()
                 return Response({'responseMsg': "Successfully changed account password.", 'success': 'true'}, status=status.HTTP_201_CREATED)
             else:
                 return Response({'responseMsg': "Invalid password.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
@@ -84,4 +83,21 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.UserProfile
     serializer_class = serializer.UserProfileSerializer
-    queryset = mod.UserProfile.objects.all()
+    allowed_methods = ('GET','POST','PATCH',)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=False)
+        self.request.data['user_id'] = self.request.user.id
+
+        if serializer.is_valid():
+            super(UserProfileViewSet, self).create(request, *args, **kwargs)
+            return Response({'responseMsg': "Successfully changed user profile.", 'success': 'true'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'responseMsg': 'User has already existing profile. Update it instead.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        query = mod.UserProfile.objects.filter(user_id=self.request.user.id)
+        if IsAdminUser():
+            query = mod.UserProfile.objects.all()
+
+        return query
