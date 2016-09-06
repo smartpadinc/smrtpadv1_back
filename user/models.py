@@ -16,7 +16,7 @@ OPT_VALID_IDS = {
 
 class UserProfile(models.Model):
     userprofile         = models.AutoField(primary_key=True)
-    user                = models.ForeignKey(User,related_name="user_profile", help_text="user_id")
+    user                = models.OneToOneField(User,related_name="user_profile", help_text="user_id", unique=True)
     first_name          = models.CharField(max_length=30, help_text="Firstname")
     middle_name         = models.CharField(max_length=5, null=True, blank=True, help_text="middle name")
     last_name           = models.CharField(max_length=30, help_text="lastname")
