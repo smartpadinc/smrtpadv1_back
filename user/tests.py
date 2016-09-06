@@ -103,17 +103,26 @@ class UserManagementTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['success'], 'false')
 
-    def test_changed_password(self):
+    def test_change_password(self):
         self.client.login(username='testuser', password='testing')
 
-        self.data['username']   = 'anothertest'
-        self.data['email']      = 'test12345@test.com'
-        self.data['password']   = 'demo123'
-        response = self.client.post(self.url['user'], self.data, format='json')
+        data = {
+            "old_password" : 'testing',
+            "new_password" : 'demo1234',
+        }
 
-        self.data['old_password']   = 'demo123'
-        self.data['new_password']   = 'demo1234'
-
-        response = self.client.patch(self.url['user_change_password'], self.data, format='json')
+        response = self.client.patch(self.url['user_change_password'], data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['success'], 'true')
+
+    def test_change_invalid_password(self):
+        self.client.login(username='testuser', password='testing')
+
+        data = {
+            "old_password" : 'testing123',
+            "new_password" : 'demo1234',
+        }
+
+        response = self.client.patch(self.url['user_change_password'], data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['success'], 'false')
