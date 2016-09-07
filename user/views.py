@@ -19,6 +19,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import admin
 admin.autodiscover()
 
+import string, random
+
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
     serializer_class = serializer.UserSerializer
@@ -36,21 +38,35 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
                 if len(user) > 0:
                     return Response({'responseMsg': "Email address already exists!", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
                 else:
+
                     # Create new user
-                    super(UserViewSet, self).create(request, *args, **kwargs)
-                    request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
+                    serializer.save()
 
                     # Add profile to newly added user
                     user_type = (request.data['user_type'] if 'user_type' in request.data else 1)
                     user = User.objects.get(email=request.data['email'])
 
                     if user is not None:
+
+                        # Generate random password for 1st time users if there are no password in request
+                        chars                    = string.ascii_letters + string.digits + string.punctuation
+                        random_password          = ''.join((random.choice(chars)) for x in range(15))
+                        request.data['password'] = (request.data['password'] if 'password' in request.data else random_password)
+
+                        # Set encrypted user_password
+                        user.set_password(request.data['password'])
+                        user.save()
+
+                        # Create User Profile
                         profile = mod.UserProfile()
                         profile.user_id     = user.id
                         profile.user_type   = user_type
                         profile.first_name  = user.first_name
                         profile.last_name   = user.last_name
                         profile.save()
+
+                        # Remove password and csrfmiddlewaretoken in return data
+                        request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
 
                         return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
                     else:
@@ -67,7 +83,7 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
         serializer = self.get_serializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
-            super(UserViewSet, self).partial_update(request, *args, **kwargs)
+            serializer.save()
             return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -110,7 +126,7 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         self.request.data['user_id'] = self.request.user.id
 
         if serializer.is_valid():
-            super(UserProfileViewSet, self).create(request, *args, **kwargs)
+            serializer.save()
             return Response({'responseMsg': "Successfully changed user profile.", 'success': 'true'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'responseMsg': 'User has already existing profile. Update it instead.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
