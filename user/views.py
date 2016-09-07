@@ -37,7 +37,22 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
                     super(UserViewSet, self).create(request, *args, **kwargs)
                     request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
 
-                    return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
+                    # Add profile to newly added user
+                    user_type = (request.data['user_type'] if 'user_type' in request.data else 1)
+                    user = User.objects.get(email=request.data['email'])
+
+                    if user is not None:
+                        profile = mod.UserProfile()
+                        profile.user_id     = user.id
+                        profile.user_type   = user_type
+                        profile.first_name  = user.first_name
+                        profile.last_name   = user.last_name
+                        profile.save()
+
+                        return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
             else:
                 return Response({'responseMsg': "Email field is required.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
 
