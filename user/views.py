@@ -30,10 +30,13 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
         if serializer.is_valid():
 
             if 'email' in request.data:
+
+                # Check if email already exists
                 user = User.objects.filter(email=request.data['email'])
                 if len(user) > 0:
                     return Response({'responseMsg': "Email address already exists!", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
                 else:
+                    # Create new user
                     super(UserViewSet, self).create(request, *args, **kwargs)
                     request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
 
@@ -70,6 +73,8 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
+        # Permissions: show only the details of authorized_user unless the user is admin
+
         query = User.objects.filter(username=self.request.user)
         if IsAdminUser():
             query = User.objects.all()
