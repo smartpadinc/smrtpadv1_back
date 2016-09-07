@@ -14,14 +14,20 @@ OPT_VALID_IDS = {
     ('3', "Driver's License"),
 }
 
+OPT_USER_TYPE = (
+    ('1', 'TENANT'),
+    ('2', 'OWNER'),
+)
+
 class UserProfile(models.Model):
     userprofile         = models.AutoField(primary_key=True)
-    user                = models.ForeignKey(User,related_name="user_profile", help_text="user_id")
+    user                = models.OneToOneField(User,related_name="user_profile", help_text="user_id", unique=True)
+    user_type           = models.CharField(max_length=3, db_index=True, default="1",  choices=OPT_USER_TYPE)
     first_name          = models.CharField(max_length=30, help_text="Firstname")
     middle_name         = models.CharField(max_length=5, null=True, blank=True, help_text="middle name")
     last_name           = models.CharField(max_length=30, help_text="lastname")
-    birthdate           = models.CharField(max_length=10, help_text="yyyy-mm-dd")
-    mobile_no           = models.CharField(max_length=20, help_text="lastname")
+    birthdate           = models.CharField(max_length=10, help_text="yyyy-mm-dd", null=True, blank=True)
+    mobile_no           = models.CharField(max_length=20, help_text="lastname", null=True, blank=True)
     address             = models.CharField(max_length=100, null=True, blank=True, help_text="address")
     city                = models.CharField(max_length=50, null=True, blank=True, help_text="City")
     state               = models.CharField(max_length=50, null=True, blank=True, help_text="State")
