@@ -35,6 +35,7 @@ class UserManagementTestCase(TestCase):
 
         self.data['username']   = 'Test'
         self.data['email']      = 'leoangelo.dia123@gmail.com'
+        self.data['user_type']  = 2
 
         response = self.client.post(self.url['user'], self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
