@@ -52,14 +52,6 @@ class Organization(models.Model):
     organization        = models.AutoField(primary_key=True)
     user                = models.ForeignKey(User,related_name="organization_owner", help_text="owner of the organization")
     organization_name   = models.CharField(max_length=30, help_text="Organization name")
-    status              = models.CharField(max_length=1, db_index=True, default="A", choices=OPT_STATUS, help_text="Active / Inactive / Deleted")
-    date_created        = models.DateTimeField(auto_now=False, auto_now_add=True, help_text="Date the record was created")
-    last_modified_by    = models.ForeignKey(User,related_name="organization_last_updated", null=True, blank=True, help_text="User who last updated the organization")
-    last_modified       = models.DateTimeField(auto_now=True, auto_now_add=False, null=True, blank=True, help_text="Date the record was last edited.")
-
-class OrganizationProfile(models.Model):
-    organizationprofile = models.AutoField(primary_key=True)
-    organization        = models.OneToOneField(User,related_name="organization_profile", help_text="organization_id", unique=True)
     description         = models.TextField(null=True, blank=True, help_text="organization description")
     address             = models.CharField(max_length=100, null=True, blank=True, help_text="address")
     city                = models.CharField(max_length=50, null=True, blank=True, help_text="City")
@@ -68,6 +60,7 @@ class OrganizationProfile(models.Model):
     zip_code            = models.CharField(max_length=10, null=True, blank=True, help_text="Zip Code")
     logo_image          = models.CharField(max_length=20, null=True, blank=True, help_text="Organization Logo")
     website_url         = models.CharField(max_length=20, null=True, blank=True, help_text="organization website url")
+    status              = models.CharField(max_length=1, db_index=True, default="A", choices=OPT_STATUS, help_text="Active / Inactive / Deleted")
     date_created        = models.DateTimeField(auto_now=False, auto_now_add=True, help_text="Date the record was created")
-    last_modified_by    = models.ForeignKey(User,related_name="organization_profile_last_updated", null=True, blank=True, help_text="User who last updated the organization profile")
+    last_modified_by    = models.ForeignKey(User,related_name="organization_last_updated", null=True, blank=True, help_text="User who last updated the organization")
     last_modified       = models.DateTimeField(auto_now=True, auto_now_add=False, null=True, blank=True, help_text="Date the record was last edited.")
