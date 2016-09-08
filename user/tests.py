@@ -19,8 +19,8 @@ class UserManagementTestCase(TestCase):
         token.save()
 
         self.url = {
-            'user': '/api/user/accounts/',
-            'user_change_password': '/api/user/accounts/change_password/',
+            'user': '/api/user/account/',
+            'user_change_password': '/api/user/account/change_password/',
         }
         self.data = {
             'username'      : '',
