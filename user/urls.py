@@ -7,7 +7,7 @@ internal_routers = routers.DefaultRouter()
 
 internal_routers.register(r'account', userview.UserViewSet, 'users')
 internal_routers.register(r'profile', userview.UserProfileViewSet, 'user-profile')
-internal_routers.register(r'organization', userview.UserViewSet, 'users')
+internal_routers.register(r'organization', userview.OrganizationViewSet, 'users')
 
 urlpatterns = internal_routers.urls
 

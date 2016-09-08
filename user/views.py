@@ -137,3 +137,15 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
             query = mod.UserProfile.objects.all()
 
         return query
+
+class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    model = mod.Organization
+    serializer_class = serializer.OrganizationSerializer
+    allowed_methods = ('GET','POST','PATCH',)
+
+    def get_queryset(self):
+        query = mod.Organization.objects.all()
+        if IsAdminUser():
+            query = mod.Organization.objects.all()
+
+        return query
