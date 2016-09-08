@@ -30,9 +30,9 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.UserProfile
-        read_only_fields = ('userprofile','date_created','last_modified_by')
+        read_only_fields = ('date_created','last_modified_by','last_modified')
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.Organization
-        fields = ('user', 'organization_name', 'status')
+        exclude = ('date_created','last_modified_by','last_modified')
