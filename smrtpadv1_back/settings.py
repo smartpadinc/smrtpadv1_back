@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
-    'user'
+    'user',
+    'properties',
+    'common',
 ]
 
 OAUTH2_PROVIDER = {
@@ -149,3 +151,38 @@ STATIC_ROOT = os.path.join(BASE_DIR, "assets/")
 #     os.path.join(BASE_DIR, "assets/"),
 # ]
 STATIC_URL = '/assets/'
+
+
+## OPTIONS ##
+
+OPT_STATUS = (
+    ('A', 'Active'),
+    ('I', 'Inactive'),
+    ('D', 'Deleted')
+)
+
+OPT_COUNTRY = (
+    ('ph', 'Philippines'),
+    ('sg', 'Singapore'),
+)
+
+OPT_VALID_IDS = {
+    ('0', 'none'),
+    ('1', 'SSS'),
+    ('2', 'Passport'),
+    ('3', "Driver's License"),
+}
+
+OPT_USER_TYPE = (
+    ('1', 'TENANT'),
+    ('2', 'OWNER'),
+    ('3', 'AGENT'),
+)
+
+OPT_PROPERTY_TYPE = (
+    ('1', 'Studio'),
+    ('2', '1-Bedroom'),
+    ('3', '2-Bedroom'),
+    ('4', 'Villa'),
+    ('5', 'Townhouse'),
+)
