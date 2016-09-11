@@ -1,8 +1,6 @@
-import json
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from user import models as model
-
 
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField('get_user_profile')

@@ -15,7 +15,6 @@ from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 from rest_framework.response import Response
-from django.contrib.auth.decorators import login_required
 from django.contrib import admin
 admin.autodiscover()
 
