@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'user',
     'properties',
-    'common',
 ]
 
 OAUTH2_PROVIDER = {
@@ -183,6 +182,25 @@ OPT_PROPERTY_TYPE = (
     ('1', 'Studio'),
     ('2', '1-Bedroom'),
     ('3', '2-Bedroom'),
-    ('4', 'Villa'),
-    ('5', 'Townhouse'),
+    ('4', '3-Bedroom'),
+    ('6', 'Townhouse'),
+)
+
+OPT_PAYMENT_TYPE = (
+    ('1', 'Cash'),
+    ('2', 'Post-dated Cheque'),
+    ('3', 'Flexible'),
+)
+
+OPT_PAYMENT_INTERVAL = (
+    ('1', 'Monthly'),
+    ('2', 'Quarterly'),
+    ('3', 'Semi-Annually'),
+    ('4', 'Annually'),
+)
+
+OPT_RENT_STATUS = (
+    ('1', 'Open'),
+    ('2', 'Rented'),
+    ('3', 'Available Soon'),
 )
