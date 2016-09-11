@@ -23,5 +23,6 @@ uwsgi_params
 
 
 user/migrations/*
+properties/migrations/*
 
 assets/*
