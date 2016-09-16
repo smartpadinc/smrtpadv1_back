@@ -19,7 +19,6 @@ __pycache__
 
 smrtpd_nginx.conf
 smrtpd_uwsgi.ini
-uwsgi_params
 
 
 user/migrations/*
