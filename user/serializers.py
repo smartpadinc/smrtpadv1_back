@@ -1,8 +1,6 @@
-import json
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from user import models as model
-
 
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField('get_user_profile')
@@ -30,4 +28,9 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.UserProfile
-        read_only_fields = ('userprofile','date_created','last_modified_by')
+        read_only_fields = ('date_created','last_modified_by','last_modified')
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = model.Organization
+        exclude = ('date_created','last_modified_by','last_modified')

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
-    'user'
+    'user',
+    'properties',
 ]
 
 OAUTH2_PROVIDER = {
@@ -151,3 +152,57 @@ STATIC_ROOT = os.path.join(BASE_DIR, "assets/")
 #     os.path.join(BASE_DIR, "assets/"),
 # ]
 STATIC_URL = '/assets/'
+
+
+## OPTIONS ##
+
+OPT_STATUS = (
+    ('A', 'Active'),
+    ('I', 'Inactive'),
+    ('D', 'Deleted')
+)
+
+OPT_COUNTRY = (
+    ('ph', 'Philippines'),
+    ('sg', 'Singapore'),
+)
+
+OPT_VALID_IDS = {
+    ('0', 'none'),
+    ('1', 'SSS'),
+    ('2', 'Passport'),
+    ('3', "Driver's License"),
+}
+
+OPT_USER_TYPE = (
+    ('1', 'TENANT'),
+    ('2', 'OWNER'),
+    ('3', 'AGENT'),
+)
+
+OPT_PROPERTY_TYPE = (
+    ('1', 'Studio'),
+    ('2', '1-Bedroom'),
+    ('3', '2-Bedroom'),
+    ('4', '3-Bedroom'),
+    ('6', 'Townhouse'),
+)
+
+OPT_PAYMENT_TYPE = (
+    ('1', 'Cash'),
+    ('2', 'Post-dated Cheque'),
+    ('3', 'Flexible'),
+)
+
+OPT_PAYMENT_INTERVAL = (
+    ('1', 'Monthly'),
+    ('2', 'Quarterly'),
+    ('3', 'Semi-Annually'),
+    ('4', 'Annually'),
+)
+
+OPT_RENT_STATUS = (
+    ('1', 'Open'),
+    ('2', 'Rented'),
+    ('3', 'Available Soon'),
+)

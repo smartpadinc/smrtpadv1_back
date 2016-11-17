@@ -19,8 +19,10 @@ class UserManagementTestCase(TestCase):
         token.save()
 
         self.url = {
-            'user': '/api/user/accounts/',
-            'user_change_password': '/api/user/accounts/change_password/',
+            'user'                  : '/api/user/account/',
+            'user_change_password'  : '/api/user/account/change_password/',
+            'user_profile'          : '/api/user/profile/',
+            'organization'          : '/api/user/organization/',
         }
         self.data = {
             'username'      : '',
@@ -29,6 +31,11 @@ class UserManagementTestCase(TestCase):
             'last_name'     : 'Test',
             'email'         : '',
         }
+
+    def test_get_user_account(self):
+        self.client.login(username='testuser', password='testing')
+        response = self.client.get(self.url['user'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_add_new_valid_account_authorized(self):
         self.client.login(username='testuser', password='testing')
@@ -127,3 +134,27 @@ class UserManagementTestCase(TestCase):
         response = self.client.patch(self.url['user_change_password'], data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['success'], 'false')
+
+    def test_get_user_profile(self):
+        self.client.login(username='testuser', password='testing')
+        response = self.client.get(self.url['user_profile'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_add_new_profile(self):
+        self.client.login(username='testuser', password='testing')
+
+        self.data['username']   = 'Test'
+        self.data['email']      = 'leoangelo.dia123@gmail.com'
+        self.data['user_type']  = 2
+        self.client.post(self.url['user'], self.data, format='json')
+
+        response = self.client.get(self.url['user_profile'])
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['user_type'], str(self.data['user_type']))
+
+    def test_organization(self):
+        self.client.login(username='testuser', password='testing')
+        response = self.client.get(self.url['organization'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
