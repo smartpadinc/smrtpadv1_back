@@ -146,13 +146,13 @@ class UserManagementTestCase(TestCase):
 
         self.data['username']   = 'Test'
         self.data['email']      = 'leoangelo.dia123@gmail.com'
+        self.data['first_name'] = 'Leo'
+        self.data['last_name']  = 'Diaz'
         self.data['user_type']  = 2
         self.client.post(self.url['user'], self.data, format='json')
 
         response = self.client.get(self.url['user_profile'])
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['user_type'], str(self.data['user_type']))
 
     def test_organization(self):
         self.client.login(username='testuser', password='testing')
