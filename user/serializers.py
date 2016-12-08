@@ -28,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.UserProfile
+        fields = '__all__'
         read_only_fields = ('date_created','last_modified_by','last_modified')
 
 class OrganizationSerializer(serializers.ModelSerializer):
