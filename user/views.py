@@ -27,12 +27,14 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
     allowed_methods = ('GET','POST','PATCH',)
 
     def create(self, request, *args, **kwargs):
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
         serializer = self.get_serializer(data=request.data, many=False)
 
         if serializer.is_valid():
 
             if 'email' in request.data:
-
                 # Check if email already exists
                 user = User.objects.filter(email=request.data['email'])
                 if len(user) > 0:
@@ -46,7 +48,6 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
                     user = User.objects.get(email=request.data['email'])
 
                     if user is not None:
-
                         # Generate random password for 1st time users if there are no password in request
                         chars                    = string.ascii_letters + string.digits + string.punctuation
                         random_password          = ''.join((random.choice(chars)) for x in range(15))
@@ -78,7 +79,25 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        return Response({'responseMsg': 'Nothing to update', 'success': 'true'}, status=status.HTTP_200_OK)
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            userprofile = mod.UserProfile.objects.filter(user_id=self.request.user.id)[:1].get()
+            userprofile.first_name = (request.data['first_name'] if 'first_name' in request.data else userprofile.first_name)
+            userprofile.last_name  = (request.data['last_name'] if 'last_name' in request.data else userprofile.last_name)
+            userprofile.save()
+
+            request.data['user_id'] = userprofile.user_id
+
+            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         query = User.objects.filter(username=self.request.user)
