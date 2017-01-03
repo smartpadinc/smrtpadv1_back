@@ -124,7 +124,6 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
 
-
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.UserProfile
     serializer_class = serializer.UserProfileSerializer
@@ -157,6 +156,23 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
             query = mod.UserProfile.objects.all()
 
         return query
+
+    @list_route()
+    def search(self, request):
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id is not None:
+            try:
+               user = mod.UserProfile.objects.filter(user_id=user_id)[:1].values()[0]
+
+               # Remove extra fields
+               user.pop('last_modified')
+               user.pop('last_modified_by_id')
+
+            except User.DoesNotExist:
+               user = None
+
+
+        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': user}, status=status.HTTP_400_BAD_REQUEST)
 
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.Organization
