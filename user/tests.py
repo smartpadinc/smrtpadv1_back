@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 # Create your tests here.
 
 class UserManagementTestCase(TestCase):
-
+    # initialiaze token/auth
     def setUp(self):
         self.factory = APIRequestFactory()
         self.client = APIClient()
