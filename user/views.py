@@ -130,6 +130,9 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
     allowed_methods = ('GET','POST','PATCH',)
 
     def create(self, request, *args, **kwargs):
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
         request.data['user'] = self.request.user.id
         serializer = self.get_serializer(data=request.data, many=False)
 
@@ -168,16 +171,28 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
                user.pop('last_modified')
                user.pop('last_modified_by_id')
 
-            except User.DoesNotExist:
-               user = None
+            except IndexError:
+               user = []
 
-
-        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': user}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(user, status=status.HTTP_200_OK)
 
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.Organization
     serializer_class = serializer.OrganizationSerializer
     allowed_methods = ('GET','POST','PATCH',)
+
+    def create(self, request, *args, **kwargs):
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
+        serializer = self.get_serializer(data=request.data, many=False)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'responseMsg': "Successfully added new organization.", 'success': 'true'}, status=status.HTTP_201_CREATED)
+
+        else:
+            return Response({'responseMsg': "Request failed due to field errors.", 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         query = mod.Organization.objects.all()
