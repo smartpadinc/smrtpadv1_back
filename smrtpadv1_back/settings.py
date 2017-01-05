@@ -77,6 +77,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware'
 ]
 
+LOGIN_URL = 'rest_framework:login'
+LOGOUT_URL = 'rest_framework:logout'
+
 CORS_ORIGIN_WHITELIST = (
     'dev-api.smartpad.local:8096',
 )

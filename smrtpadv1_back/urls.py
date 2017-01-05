@@ -3,7 +3,7 @@ from django.contrib import admin
 from rest_framework_swagger.views import get_swagger_view
 admin.autodiscover()
 
-schema_view = get_swagger_view(title='Pastebin API')
+schema_view = get_swagger_view(title='SmartPad Internal API v1')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^api/user/', include('user.urls')),
     url(r'^api/properties/', include('properties.urls')),
     url(r'^api/swagger/', schema_view),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
