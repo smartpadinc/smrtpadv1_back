@@ -22,7 +22,7 @@ class UnitProperty(models.Model):
     country             = models.CharField(max_length=3, db_index=True, default="ph", choices=settings.OPT_COUNTRY)
     zip_code            = models.CharField(max_length=10, null=True, blank=True, help_text="Zip Code")
     gmaps_url           = models.TextField(null=True, blank=True, help_text="Google maps url")
-    recurring_payment   = models.DecimalField(max_digits=10, decimal_places=3, help_text="Payment")
+    recurring_payment   = models.DecimalField(max_digits=10, decimal_places=3, help_text="Payment", default="0")
     payment_type        = models.CharField(max_length=1, db_index=True, choices=settings.OPT_PAYMENT_TYPE, default="1")
     rent_status         = models.CharField(max_length=1, db_index=True, default="1", choices=settings.OPT_RENT_STATUS, help_text="Open / Rented / Available Soon")
     status              = models.CharField(max_length=1, db_index=True, default="A", choices=settings.OPT_STATUS, help_text="Active / Inactive / Deleted")
