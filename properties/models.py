@@ -26,6 +26,6 @@ class UnitProperty(models.Model):
     payment_type        = models.CharField(max_length=1, db_index=True, choices=settings.OPT_PAYMENT_TYPE, default="1")
     rent_status         = models.CharField(max_length=1, db_index=True, default="1", choices=settings.OPT_RENT_STATUS, help_text="Open / Rented / Available Soon")
     status              = models.CharField(max_length=1, db_index=True, default="A", choices=settings.OPT_STATUS, help_text="Active / Inactive / Deleted")
-    date_created        = models.DateTimeField(auto_now_add=True, help_text="Date the record was created", blank=True)
+    date_created        = models.DateTimeField(auto_now_add=True, help_text="Date the record was created", blank=True, null=True)
     last_modified_by    = models.ForeignKey(User,related_name="unitproperty_last_updated", null=True, blank=True, help_text="User who last updated the unitproperty")
-    last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", blank=True)
+    last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", blank=True, null=True)
