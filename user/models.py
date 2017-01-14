@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 
+
 class UserProfile(models.Model):
     userprofile         = models.AutoField(primary_key=True)
     user                = models.OneToOneField(User,related_name="user_profile", help_text="user_id", unique=True)

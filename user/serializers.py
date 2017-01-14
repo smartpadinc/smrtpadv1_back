@@ -5,6 +5,17 @@ from user import models as model
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField('get_user_profile')
 
+    # http://stackoverflow.com/questions/22264368/how-to-override-django-unique-error-message-for-username-in-custom-userchangef
+    # first_name = serializers.CharField(
+    #     unique=True,
+    #     min_length=5,
+    #     error_messages={
+    #         "unique": u"Dapat Unique!",
+    #         "blank": "Password cannot be empty.",
+    #         "min_length": "Password too short.",
+    #     },
+    #)
+
     def get_user_profile(self, obj):
         try:
            query = model.UserProfile.objects.values().get(user=obj.id)

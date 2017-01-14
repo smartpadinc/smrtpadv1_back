@@ -12,19 +12,46 @@ from user.permissions import DefaultPermissions as perm
 #from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
 from rest_framework import viewsets, mixins, filters, status, permissions
 from rest_framework.decorators import detail_route, list_route
-#from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.contrib import admin
 admin.autodiscover()
 
 import string, random
 
+
+import django_filters.rest_framework
+
+class SnippetTest(APIView):
+    #permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        return Response({"test":"test"})
+
+    def post(self, request):
+        test = serializer.UserSerializer(data=request.data)
+        if(test.is_valid()):
+            return Response({"test":"this is a post"})
+        else:
+            return Response(test.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SnippetDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+    def patch(self, request, pk, format=None):
+        """
+        Perform a update
+        """
+        return Response({"test":"this is a put"})
+
+
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
     serializer_class = serializer.UserSerializer
     allowed_methods = ('GET','POST','PATCH',)
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -151,10 +178,12 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.UserProfile
     serializer_class = serializer.UserProfileSerializer
     allowed_methods = ('GET','POST','PATCH',)
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         # make the request POST mutable so that we can alter the response
