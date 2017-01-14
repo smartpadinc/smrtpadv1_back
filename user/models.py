@@ -6,7 +6,7 @@ from django.conf import settings
 
 class UserProfile(models.Model):
     userprofile         = models.AutoField(primary_key=True, editable=False)
-    user                = models.OneToOneField(User,related_name="user_profile", help_text="user_id", unique=True)
+    user                = models.OneToOneField(User,related_name="user_profile", help_text="user_id", unique=True, default="0000000")
     user_type           = models.CharField(max_length=3, db_index=True, default="1",  choices=settings.OPT_USER_TYPE)
     first_name          = models.CharField(max_length=30, help_text="Firstname")
     middle_name         = models.CharField(max_length=30, null=True, blank=True, help_text="middle name")
