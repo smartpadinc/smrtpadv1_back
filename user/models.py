@@ -24,9 +24,9 @@ class UserProfile(models.Model):
     identification_no   = models.CharField(max_length=50, null=True, blank=True, help_text="e.g SSS / Driver's License / Passport")
     img_url             = models.CharField(max_length=20, null=True, blank=True, help_text="image filename")
     fb_url              = models.CharField(max_length=50, null=True, blank=True, help_text="facebook profile")
-    date_created        = models.DateTimeField(auto_now=False, auto_now_add=True, help_text="Date the record was created", default="2017-01-13 17:19:14.230316+00")
+    date_created        = models.DateTimeField(auto_now_add=True, help_text="Date the record was created")
     last_modified_by    = models.ForeignKey(User,related_name="user_profile_last_updated", null=True, blank=True, help_text="User who last updated the profile")
-    last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", default="2017-01-13 17:19:14.230316+00")
+    last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", null=True)
 
 class Organization(models.Model):
     organization        = models.AutoField(primary_key=True)
@@ -43,6 +43,6 @@ class Organization(models.Model):
     logo_image          = models.CharField(max_length=20, null=True, blank=True, help_text="Organization Logo")
     website_url         = models.CharField(max_length=20, null=True, blank=True, help_text="organization website url")
     status              = models.CharField(max_length=1, db_index=True, default="A", choices=settings.OPT_STATUS, help_text="Active / Inactive / Deleted")
-    date_created        = models.DateTimeField(auto_now=False, auto_now_add=True, help_text="Date the record was created", default="2017-01-13 17:19:14.230316+00")
+    date_created        = models.DateTimeField(auto_now_add=True, help_text="Date the record was created")
     last_modified_by    = models.ForeignKey(User,related_name="organization_last_updated", null=True, blank=True, help_text="User who last updated the organization")
-    last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", default="2017-01-13 17:19:14.230316+00")
+    last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", null=True)
