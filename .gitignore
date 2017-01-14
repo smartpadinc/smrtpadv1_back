@@ -24,3 +24,4 @@ smrtpd_uwsgi.ini
 user/migrations/*
 properties/migrations/*
 assets/*
+.env
