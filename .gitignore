@@ -17,8 +17,8 @@ nbproject
 .node_history
 __pycache__
 
-smrtpd_nginx.conf
-smrtpd_uwsgi.ini
+*_nginx.conf
+*_uwsgi.ini
 
 
 user/migrations/*
