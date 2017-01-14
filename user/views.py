@@ -4,7 +4,8 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return render(request, 'index.html')
+    #return HttpResponse("Hello, world. You're at the polls index.")
 
 from user import models as mod
 from user import serializers as serializer
@@ -12,27 +13,66 @@ from user.permissions import DefaultPermissions as perm
 #from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
 from rest_framework import viewsets, mixins, filters, status, permissions
 from rest_framework.decorators import detail_route, list_route
-#from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.contrib import admin
 admin.autodiscover()
 
 import string, random
 
+class SnippetTest(APIView):
+    """
+        Sample docs
+    """
+    
+    permission_classes = (AllowAny,)
+    authentication_classes = (BasicAuthentication,)
+    serializer_class = serializer.UserSerializer
+
+    def get(self, request):
+        return Response({"test":"test"})
+
+    def post(self, request):
+        test = serializer.UserSerializer(data=request.data)
+        if(test.is_valid()):
+            return Response({"test":"this is a post"})
+        else:
+            return Response(test.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SnippetDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+    def patch(self, request, pk, format=None):
+        """
+        Perform a update
+        """
+        return Response({"test":"this is a put"})
+
+
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
     serializer_class = serializer.UserSerializer
     allowed_methods = ('GET','POST','PATCH',)
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
+        """
+            API endpoint for creating new user
+            \n
+            This will also create basic profile information of user
+        """
+
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
         serializer = self.get_serializer(data=request.data, many=False)
 
         if serializer.is_valid():
 
             if 'email' in request.data:
-
                 # Check if email already exists
                 user = User.objects.filter(email=request.data['email'])
                 if len(user) > 0:
@@ -46,7 +86,6 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
                     user = User.objects.get(email=request.data['email'])
 
                     if user is not None:
-
                         # Generate random password for 1st time users if there are no password in request
                         chars                    = string.ascii_letters + string.digits + string.punctuation
                         random_password          = ''.join((random.choice(chars)) for x in range(15))
@@ -78,9 +117,37 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        return Response({'responseMsg': 'Nothing to update', 'success': 'true'}, status=status.HTTP_200_OK)
+        """
+            API endpoint for updating user account
+            \n
+        """
+
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            userprofile = mod.UserProfile.objects.filter(user_id=self.request.user.id)[:1].get()
+            userprofile.first_name = (request.data['first_name'] if 'first_name' in request.data else userprofile.first_name)
+            userprofile.last_name  = (request.data['last_name'] if 'last_name' in request.data else userprofile.last_name)
+            userprofile.save()
+
+            request.data['user_id'] = userprofile.user_id
+
+            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
+        """
+            API endpoint for updating user account
+            \n
+            Queries the user profile of currently logged user
+        """
         query = User.objects.filter(username=self.request.user)
         if perm.isAdmin(self):
             query = User.objects.all()
@@ -89,6 +156,17 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 
     @list_route(methods=['patch'],)
     def change_password(self, request, pk=None):
+        """
+            API Endpoint for changing password
+            **Parameters**\n
+            ```
+            {
+                 "old_password": "youroldpassword",
+                 "new_password": "new_password"
+            }
+            ```
+        """
+
         user = User.objects.get(pk=self.request.user.id)
 
         if user is not None and 'old_password' in request.data and 'new_password' in request.data:
@@ -110,8 +188,12 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
     model = mod.UserProfile
     serializer_class = serializer.UserProfileSerializer
     allowed_methods = ('GET','POST','PATCH',)
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
         request.data['user'] = self.request.user.id
         serializer = self.get_serializer(data=request.data, many=False)
 
@@ -139,10 +221,42 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
 
         return query
 
+    @list_route(methods=['get'])
+    def search(self, request):
+        """
+            Y u no working
+        """
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id is not None:
+            try:
+               user = mod.UserProfile.objects.filter(user_id=user_id)[:1].values()[0]
+
+               # Remove extra fields
+               user.pop('last_modified')
+               user.pop('last_modified_by_id')
+
+            except IndexError:
+               user = []
+
+        return Response(user, status=status.HTTP_200_OK)
+
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.Organization
     serializer_class = serializer.OrganizationSerializer
     allowed_methods = ('GET','POST','PATCH',)
+
+    def create(self, request, *args, **kwargs):
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
+        serializer = self.get_serializer(data=request.data, many=False)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'responseMsg': "Successfully added new organization.", 'success': 'true'}, status=status.HTTP_201_CREATED)
+
+        else:
+            return Response({'responseMsg': "Request failed due to field errors.", 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         query = mod.Organization.objects.all()

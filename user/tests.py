@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 # Create your tests here.
 
 class UserManagementTestCase(TestCase):
-
+    # initialiaze token/auth
     def setUp(self):
         self.factory = APIRequestFactory()
         self.client = APIClient()
@@ -120,7 +120,7 @@ class UserManagementTestCase(TestCase):
         }
 
         response = self.client.patch(self.url['user_change_password'], data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['success'], 'true')
 
     def test_change_invalid_password(self):
