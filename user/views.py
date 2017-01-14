@@ -4,7 +4,8 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return render(request, 'index.html')
+    #return HttpResponse("Hello, world. You're at the polls index.")
 
 from user import models as mod
 from user import serializers as serializer
@@ -13,7 +14,7 @@ from user.permissions import DefaultPermissions as perm
 from rest_framework import viewsets, mixins, filters, status, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,11 +23,15 @@ admin.autodiscover()
 
 import string, random
 
-
-import django_filters.rest_framework
-
 class SnippetTest(APIView):
-    #permission_classes = (IsAuthenticated,)
+    """
+        Sample docs
+    """
+    
+    permission_classes = (AllowAny,)
+    authentication_classes = (BasicAuthentication,)
+    serializer_class = serializer.UserSerializer
+
     def get(self, request):
         return Response({"test":"test"})
 

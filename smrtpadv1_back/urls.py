@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/user/', include('user.urls')),
     url(r'^api/properties/', include('properties.urls')),
-    url(r'^api/swagger/', schema_view),
+    url(r'^docs/', include('rest_framework_docs.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+
+    #url(r'^api/swagger/', schema_view),
 ]

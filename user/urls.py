@@ -9,7 +9,7 @@ internal_routers.register(r'profile', userview.UserProfileViewSet, 'user-profile
 internal_routers.register(r'organization', userview.OrganizationViewSet, 'organization')
 
 urlpatterns = [
-    #   url(r'^sample-url/$', userview.index, name='index'),
+    url(r'^sample-url/$', userview.index, name='index'),
     url(r'^snippets/$', userview.SnippetTest.as_view(), name="snippet-test"),
     url(r'^snippets/(?P<pk>[0-9]+)/$', userview.SnippetDetail.as_view()),
 ]
