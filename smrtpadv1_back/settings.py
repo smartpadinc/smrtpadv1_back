@@ -20,11 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '#1!#!0p+akibi2ox^4s9(scw$13rpup$k(u7(%$7fsitng2v-i'
+SECRET_KEY = os.environ.get('SYSTEM_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('ENABLE_DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -63,8 +62,10 @@ REST_FRAMEWORK = {
 }
 
 REST_FRAMEWORK_DOCS = {
-    'HIDE_DOCS': True
+    'HIDE_DOCS': False,
 }
+
+print(os.environ.get('HIDE_DRFDOCS'))
 
 
 MIDDLEWARE = [
@@ -109,7 +110,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'smrtpadv1_back.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 DATABASES = {
@@ -119,7 +119,7 @@ DATABASES = {
         'USER': os.environ.get('SMPD_DB_USER'),
         'PASSWORD': os.environ.get('SMPD_DB_PASS'),
         'HOST': os.environ.get('SMPD_DB_HOST'),
-        'PORT': "5432",
+        'PORT': os.environ.get('SMPD_DB_PORT'),
     }
 }
 
