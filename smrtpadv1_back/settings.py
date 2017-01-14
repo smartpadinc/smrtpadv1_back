@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#1!#!0p+akibi2ox^4s9(scw$13rpup$k(u7(%$7fsitng2v-i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'oauth2_provider',
-    #'rest_framework_swagger',
     'rest_framework_docs',
     'rest_framework',
     'rest_framework.authtoken',
@@ -62,6 +61,11 @@ REST_FRAMEWORK = {
     #    'rest_framework.permissions.IsAuthenticated',
     #)
 }
+
+REST_FRAMEWORK_DOCS = {
+    'HIDE_DOCS': True
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
