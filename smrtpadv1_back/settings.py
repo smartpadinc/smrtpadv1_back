@@ -65,9 +65,6 @@ REST_FRAMEWORK_DOCS = {
     'HIDE_DOCS': False,
 }
 
-print(os.environ.get('HIDE_DRFDOCS'))
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
