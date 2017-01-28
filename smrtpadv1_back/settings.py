@@ -140,6 +140,83 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# https://ian.pizza/b/2013/04/16/getting-started-with-django-logging-in-5-minutes/
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'app_log': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.environ.get('API_LOG'),
+            'maxBytes': 1024*1024*15, # 15MB
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
+        'system_error_log': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.environ.get('ERROR_LOG'),
+            'maxBytes': 1024*1024*15, # 15MB
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
+        'db_log': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.environ.get('DB_LOG'),
+            'maxBytes': 1024*1024*15, # 15MB
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['system_error_log'],
+            'level': 'ERROR',
+        },
+        'django.server': {
+            'handlers': ['system_error_log'],
+            'level': 'ERROR',
+        },
+        'django.template': {
+            'handlers': ['system_error_log'],
+            'level': 'ERROR',
+        },
+        'django.db.backends': {
+            'handlers': ['db_log'],
+            'level': 'ERROR',
+        },
+        'user': {
+            'handlers': ['app_log',],
+            'level': 'DEBUG',
+        },
+        'properties': {
+            'handlers': ['app_log',],
+            'level': 'DEBUG',
+        },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

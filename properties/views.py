@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from django.contrib import admin
 admin.autodiscover()
 
-import string, random
+import string, random, logging
 
 class UnitPropertySearchViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     model = mod.UnitProperty

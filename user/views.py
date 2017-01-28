@@ -2,8 +2,13 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.http import HttpResponse
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Create your views here.
 def index(request):
+    #logger.debug("this is a debug message! love of my life")
+    #logger.error("this is an error message!! love of my life")
     return render(request, 'index.html')
     #return HttpResponse("Hello, world. You're at the polls index.")
 
@@ -27,7 +32,7 @@ class SnippetTest(APIView):
     """
         Sample docs
     """
-    
+
     permission_classes = (AllowAny,)
     authentication_classes = (BasicAuthentication,)
     serializer_class = serializer.UserSerializer
