@@ -167,7 +167,7 @@ LOGGING = {
         'app_log': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.environ.get('API_LOG'),
+            'filename': '/var/www/log/api.log',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
             'formatter': 'verbose'
@@ -175,7 +175,7 @@ LOGGING = {
         'system_error_log': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.environ.get('ERROR_LOG'),
+            'filename': '/var/www/log/error.log',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
             'formatter': 'verbose'
@@ -183,7 +183,7 @@ LOGGING = {
         'db_log': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.environ.get('DB_LOG'),
+            'filename': '/var/www/log/db.log',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
             'formatter': 'verbose'
