@@ -20,7 +20,6 @@ __pycache__
 *_nginx.conf
 *_uwsgi.ini
 
-
 user/migrations/*
 properties/migrations/*
 assets/*
