@@ -30,7 +30,7 @@ import string, random
 
 class SnippetTest(APIView):
     """
-        Sample docs
+        Sample docs 1234
     """
 
     permission_classes = (AllowAny,)
