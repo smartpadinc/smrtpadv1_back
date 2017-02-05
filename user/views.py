@@ -56,6 +56,83 @@ class SnippetDetail(APIView):
         """
         return Response({"test":"this is a put"})
 
+class UserAccount(APIView):
+    """
+     Endpoint for registering user
+    """
+    permission_classes = (AllowAny,)
+    authentication_classes = (BasicAuthentication)
+    serializer_class = serializer.UserSerializer
+
+    def post(self, request):
+        # make the request POST mutable so that we can alter the response
+        request.POST._mutable = True
+
+        srlzr = serializer.UserSerializer(data=request.data, many=False)
+
+        if srlzr.is_valid():
+            if 'email' in request.data:
+                # Check if email already exists
+                user = User.objects.filter(email=request.data['email'])
+                if len(user) > 0:
+                    return Response({'responseMsg': "Email address already exists!", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # Create new user
+                    srlzr.save()
+
+                    # Add profile to newly added user
+                    user_type = (request.data['user_type'] if 'user_type' in request.data else 1)
+                    user = User.objects.get(email=request.data['email'])
+
+                    if user is not None:
+                        # Generate random password for 1st time users if there are no password in request
+                        chars                    = string.ascii_letters + string.digits + string.punctuation
+                        random_password          = ''.join((random.choice(chars)) for x in range(15))
+                        request.data['password'] = (request.data['password'] if 'password' in request.data else random_password)
+
+                        # Set encrypted user_password
+                        user.set_password(request.data['password'])
+                        user.save()
+
+                        # Create User Profile
+                        profile = mod.UserProfile()
+                        profile.user_id     = user.id
+                        profile.user_type   = user_type
+                        profile.first_name  = user.first_name
+                        profile.last_name   = user.last_name
+                        profile.save()
+
+                        # Remove password and csrfmiddlewaretoken in return data
+                        request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
+
+                        return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+            else:
+                return Response({'responseMsg': "Email field is required.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserProfile(APIView):
+    """
+     Endpoint for updating account profile
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializer.UserProfileSerializer
+
+    def patch(self, request, pk, format=None):
+        """
+        Perform a update
+        """
+        return Response({"test":"this is a put"})
+
+    def delete(self, request, pk, format=None):
+        """
+        Perform a delete
+        """
+        return Response({"test":"this is a put"})
 
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
