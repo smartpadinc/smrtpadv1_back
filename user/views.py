@@ -123,10 +123,18 @@ class UserProfile(APIView):
     serializer_class = serializer.UserProfileSerializer
 
     def patch(self, request, pk, format=None):
-        """
-        Perform a update
-        """
-        return Response({"test":"this is a put"})
+        request.POST._mutable = True
+        instance = mod.UserProfile.objects.get(user_id=self.request.user)
+        srlzr = serializer.UserProfileSerializer(instance, data=request.data, partial=True)
+
+        if pk != self.request.user:
+            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if srlzr.is_valid():
+            srlzr.save()
+            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
+
+        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         """
