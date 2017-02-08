@@ -39,7 +39,14 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.UserProfile
-        exclude = ('userprofile','date_created','last_modified_by','last_modified','user')
+        exclude = ('userprofile','date_created','last_modified_by','last_modified','user','user_type')
+
+class AccountChangePasswordSerializer(serializers.ModelSerializer):
+     new_password = serializers.CharField(required=True, max_length=32)
+
+     class Meta:
+         model = User
+         fields = ('password','new_password',)
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:

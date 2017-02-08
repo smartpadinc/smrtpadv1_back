@@ -28,40 +28,12 @@ admin.autodiscover()
 
 import string, random
 
-class SnippetTest(APIView):
-    """
-        Sample docs 1234
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = (BasicAuthentication,)
-    serializer_class = serializer.UserSerializer
-
-    def get(self, request):
-        return Response({"test":"test"})
-
-    def post(self, request):
-        test = serializer.UserSerializer(data=request.data)
-        if(test.is_valid()):
-            return Response({"test":"this is a post"})
-        else:
-            return Response(test.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class SnippetDetail(APIView):
-    permission_classes = (IsAuthenticated,)
-    def patch(self, request, pk, format=None):
-        """
-        Perform a update
-        """
-        return Response({"test":"this is a put"})
-
 class UserAccount(APIView):
     """
      Endpoint for registering user
     """
     permission_classes = (AllowAny,)
-    authentication_classes = (BasicAuthentication)
+    authentication_classes = (BasicAuthentication,)
     serializer_class = serializer.UserSerializer
 
     def post(self, request):
@@ -123,24 +95,50 @@ class UserProfile(APIView):
     serializer_class = serializer.UserProfileSerializer
 
     def patch(self, request, pk, format=None):
-        request.POST._mutable = True
-        instance = mod.UserProfile.objects.get(user_id=self.request.user)
-        srlzr = serializer.UserProfileSerializer(instance, data=request.data, partial=True)
 
-        if pk != self.request.user:
+        if int(pk) != int(request.user.id):
             return Response({'responseMsg': 'Request failed. User mismatch.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.POST._mutable = True
+        instance = mod.UserProfile.objects.get(user_id=request.user.id)
+        srlzr = serializer.UserProfileSerializer(instance, data=request.data, partial=True)
 
         if srlzr.is_valid():
             srlzr.save()
+
+            user = User.objects.get(pk=self.request.user.id)
+            user.first_name = request.data['first_name']
+            user.last_name  = request.data['last_name']
+            user.save()
+
             return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
 
         return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        """
-        Perform a delete
-        """
-        return Response({"test":"this is a put"})
+class AccountChangePassword(APIView):
+    """
+        Endpoint for changing user password
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializer.AccountChangePasswordSerializer
+
+    def post(self, request, pk, format=None):
+
+        if int(pk) != int(request.user.id):
+            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+        instance = User.objects.get(pk=request.user.id)
+        srlzr = serializer.AccountChangePasswordSerializer(instance, data=request.data, partial=True)
+
+        if srlzr.is_valid() and 'new_password' in request.data:
+            if instance.check_password(request.data['password']):
+                instance.set_password(request.data['new_password'])
+                instance.save()
+                return Response({'responseMsg': "Successfully changed account password.", 'success': 'true'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'responseMsg': "Invalid password.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
