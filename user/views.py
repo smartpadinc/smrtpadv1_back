@@ -14,6 +14,7 @@ def index(request):
 
 from user import models as mod
 from user import serializers as serializer
+from user import filters as filtr
 from user.permissions import DefaultPermissions as perm
 #from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
 from rest_framework import viewsets, mixins, filters, status, permissions
@@ -27,6 +28,17 @@ from django.contrib import admin
 admin.autodiscover()
 
 import string, random
+
+class UserAccountList(APIView):
+    """
+        Endpoint for getting user account details
+    """
+    permission_classes = (IsAuthenticated,)
+    filter_fields = ('category', 'in_stock')
+    #serializer_class = serializer.UserAccountListSerializer
+
+    def get(self, request):
+        return {}
 
 class UserAccount(APIView):
     """
@@ -139,6 +151,9 @@ class AccountChangePassword(APIView):
                 return Response({'responseMsg': "Invalid password.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User

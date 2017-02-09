@@ -2,6 +2,13 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from user import models as model
 
+class UserAccountListSerializer(serializers.ModelSerializer):
+    new_password = serializers.CharField(required=True, max_length=32)
+
+    class Meta:
+        model = User
+        fields = ('password','new_password',)
+
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField('get_user_profile')
 
