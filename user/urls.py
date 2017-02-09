@@ -11,7 +11,7 @@ internal_routers.register(r'organization', userview.OrganizationViewSet, 'organi
 urlpatterns = [
     url(r'^sample-url/$', userview.index, name='index'),
 
-    url(r'^account$', userview.UserAccountList.as_view(), name="user.register"),
+    url(r'^account$', userview.UserAccountList.as_view(), name="user.account"),
     url(r'^register$', userview.UserAccount.as_view(), name="user.register"),
     url(r'^profile/(?P<pk>[0-9]+)/$', userview.UserProfile.as_view(), name="user.profile"),
     url(r'^change_password/(?P<pk>[0-9]+)/$', userview.AccountChangePassword.as_view(), name="change.password"),

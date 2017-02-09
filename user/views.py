@@ -27,7 +27,7 @@ from rest_framework.views import APIView
 from django.contrib import admin
 admin.autodiscover()
 
-import string, random
+import string, random, coreapi
 
 class UserAccountList(APIView):
     """
@@ -44,6 +44,17 @@ class UserAccount(APIView):
     """
      Endpoint for registering user
     """
+    coreapi_fields = (
+        coreapi.Field(
+            name='email',
+            location='query',
+            required=True,
+            description='Email Address to be validated',
+            type='string'
+        ),
+    )
+
+
     permission_classes = (AllowAny,)
     authentication_classes = (BasicAuthentication,)
     serializer_class = serializer.UserSerializer
