@@ -3,14 +3,6 @@ from rest_framework import serializers
 from user import models as model
 
 class UserAccountListSerializer(serializers.ModelSerializer):
-    new_password = serializers.CharField(required=True, max_length=32)
-
-    class Meta:
-        model = User
-        fields = ('password','new_password',)
-
-class UserSerializer(serializers.ModelSerializer):
-    profile = serializers.SerializerMethodField('get_user_profile')
 
     # http://stackoverflow.com/questions/22264368/how-to-override-django-unique-error-message-for-username-in-custom-userchangef
     # first_name = serializers.CharField(
@@ -22,15 +14,13 @@ class UserSerializer(serializers.ModelSerializer):
     #         "min_length": "Password too short.",
     #     },
     #)
+    profile = serializers.SerializerMethodField('get_user_profile')
 
     def get_user_profile(self, obj):
         try:
            query = model.UserProfile.objects.values().get(user=obj.id)
 
-           del query["userprofile"]
-           del query["date_created"]
            del query["last_modified_by_id"]
-           del query["last_modified"]
 
            return query
 
@@ -39,7 +29,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email','profile',)
+        fields = ('id','username','first_name','last_name','email','profile')
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email',)
         write_only_fields = ('password',)
         read_only_fields = ('last_login','date_joined')
 

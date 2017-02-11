@@ -11,10 +11,10 @@ internal_routers.register(r'organization', userview.OrganizationViewSet, 'organi
 urlpatterns = [
     url(r'^sample-url/$', userview.index, name='index'),
 
-    url(r'^account$', userview.UserAccountList.as_view(), name="user.register"),
-    url(r'^register$', userview.UserAccount.as_view(), name="user.register"),
-    url(r'^profile/(?P<pk>[0-9]+)/$', userview.UserProfile.as_view(), name="user.profile"),
-    url(r'^change_password/(?P<pk>[0-9]+)/$', userview.AccountChangePassword.as_view(), name="change.password"),
+    url(r'^account/(?P<pk>.*)/$', userview.UserAccountList.as_view(), name="user.list"),
+    url(r'^account$', userview.UserAccount.as_view(), name="user.register"),
+    url(r'^profile/(?P<user_id>[0-9]+)/$', userview.UserProfile.as_view(), name="user.profile"),
+    url(r'^change_password/(?P<user_id>[0-9]+)/$', userview.AccountChangePassword.as_view(), name="change.password"),
 ]
 
 urlpatterns += internal_routers.urls

@@ -35,10 +35,19 @@ class UserAccountList(APIView):
     """
     permission_classes = (IsAuthenticated,)
     filter_fields = ('category', 'in_stock')
-    #serializer_class = serializer.UserAccountListSerializer
+    serializer_class = serializer.UserAccountListSerializer
 
-    def get(self, request):
-        return {}
+    def get(self, request, pk=None):
+
+        try:
+            user_id = pk if pk else request.user.id
+            instance = User.objects.get(pk=user_id)
+            srlzr = serializer.UserAccountListSerializer(instance)
+
+            return Response({'data': srlzr.data, 'success': True}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({'success': False, 'responseMsg': "User does not exists"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserAccount(APIView):
     """
@@ -59,7 +68,7 @@ class UserAccount(APIView):
                 # Check if email already exists
                 user = User.objects.filter(email=request.data['email'])
                 if len(user) > 0:
-                    return Response({'responseMsg': "Email address already exists!", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'responseMsg': "Email address already exists!", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     # Create new user
                     srlzr.save()
@@ -89,15 +98,15 @@ class UserAccount(APIView):
                         # Remove password and csrfmiddlewaretoken in return data
                         request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
 
-                        return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
+                        return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': True}, status=status.HTTP_201_CREATED)
                     else:
-                        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                return Response({'responseMsg': "Email field is required.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'responseMsg': "Email field is required.", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserProfile(APIView):
     """
@@ -106,10 +115,10 @@ class UserProfile(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializer.UserProfileSerializer
 
-    def patch(self, request, pk, format=None):
+    def patch(self, request, user_id, format=None):
 
-        if int(pk) != int(request.user.id):
-            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+        if int(user_id) != int(request.user.id):
+            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
         request.POST._mutable = True
         instance = mod.UserProfile.objects.get(user_id=request.user.id)
@@ -123,9 +132,9 @@ class UserProfile(APIView):
             user.last_name  = request.data['last_name']
             user.save()
 
-            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
+            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': True}, status=status.HTTP_200_OK)
 
-        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class AccountChangePassword(APIView):
     """
@@ -134,23 +143,23 @@ class AccountChangePassword(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializer.AccountChangePasswordSerializer
 
-    def post(self, request, pk, format=None):
+    def post(self, request, user_id, format=None):
 
-        if int(pk) != int(request.user.id):
-            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+        if int(user_id) != int(request.user.id):
+            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
         instance = User.objects.get(pk=request.user.id)
         srlzr = serializer.AccountChangePasswordSerializer(instance, data=request.data, partial=True)
 
-        if srlzr.is_valid() and 'new_password' in request.data:
+        if srlzr.is_valid() and 'new_password' in request.data and 'password' in request.data:
             if instance.check_password(request.data['password']):
                 instance.set_password(request.data['new_password'])
                 instance.save()
-                return Response({'responseMsg': "Successfully changed account password.", 'success': 'true'}, status=status.HTTP_200_OK)
+                return Response({'responseMsg': "Successfully changed account password.", 'success': True}, status=status.HTTP_200_OK)
             else:
-                return Response({'responseMsg': "Invalid password.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'responseMsg': "Invalid password.", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -179,7 +188,7 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
                 # Check if email already exists
                 user = User.objects.filter(email=request.data['email'])
                 if len(user) > 0:
-                    return Response({'responseMsg': "Email address already exists!", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'responseMsg': "Email address already exists!", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     # Create new user
                     serializer.save()
@@ -209,15 +218,15 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
                         # Remove password and csrfmiddlewaretoken in return data
                         request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
 
-                        return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': 'true'}, status=status.HTTP_201_CREATED)
+                        return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': True}, status=status.HTTP_201_CREATED)
                     else:
-                        return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                return Response({'responseMsg': "Email field is required.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'responseMsg': "Email field is required.", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         """
@@ -241,9 +250,9 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 
             request.data['user_id'] = userprofile.user_id
 
-            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
+            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': True}, status=status.HTTP_200_OK)
         else:
-            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         """
@@ -280,11 +289,11 @@ class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
             if user.check_password(old):
                 user.set_password(new)
                 user.save()
-                return Response({'responseMsg': "Successfully changed account password.", 'success': 'true'}, status=status.HTTP_200_OK)
+                return Response({'responseMsg': "Successfully changed account password.", 'success': True}, status=status.HTTP_200_OK)
             else:
-                return Response({'responseMsg': "Invalid password.", 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'responseMsg': "Invalid password.", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -302,9 +311,9 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'responseMsg': "Successfully changed user profile.", 'success': 'true'}, status=status.HTTP_201_CREATED)
+            return Response({'responseMsg': "Successfully changed user profile.", 'success': True}, status=status.HTTP_201_CREATED)
         else:
-            return Response({'responseMsg': "Request failed due to field errors.", 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': "Request failed due to field errors.", 'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -312,9 +321,9 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': 'true'}, status=status.HTTP_200_OK)
+            return Response({'responseMsg': "Successfully Updated!", 'data': request.data, 'success': True}, status=status.HTTP_200_OK)
         else:
-            return Response({'responseMsg': 'Request failed due to field errors.', 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         query = mod.UserProfile.objects.filter(user_id=self.request.user.id)
@@ -356,10 +365,10 @@ class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'responseMsg': "Successfully added new organization.", 'success': 'true'}, status=status.HTTP_201_CREATED)
+            return Response({'responseMsg': "Successfully added new organization.", 'success': True}, status=status.HTTP_201_CREATED)
 
         else:
-            return Response({'responseMsg': "Request failed due to field errors.", 'success': 'false', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'responseMsg': "Request failed due to field errors.", 'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         query = mod.Organization.objects.all()
