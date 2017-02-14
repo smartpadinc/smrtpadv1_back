@@ -9,7 +9,7 @@ internal_routers = routers.DefaultRouter()
 internal_routers.register(r'organization', userview.OrganizationViewSet, 'organization')
 
 urlpatterns = [
-    url(r'^sample-url/$', userview.index, name='index'),
+    #url(r'^sample-url/$', userview.index, name='index'),
 
     url(r'^account/(?P<pk>.*)/$', userview.UserAccountList.as_view(), name="user.list"),
     url(r'^account$', userview.UserAccount.as_view(), name="user.register"),
