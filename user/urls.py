@@ -4,14 +4,17 @@ from user import views as userview
 
 internal_routers = routers.DefaultRouter()
 
-internal_routers.register(r'account', userview.UserViewSet, 'users')
-internal_routers.register(r'profile', userview.UserProfileViewSet, 'user-profile')
+#internal_routers.register(r'account', userview.UserViewSet, 'users')
+#internal_routers.register(r'profile', userview.UserProfileViewSet, 'user-profile')
 internal_routers.register(r'organization', userview.OrganizationViewSet, 'organization')
 
 urlpatterns = [
-    url(r'^sample-url/$', userview.index, name='index'),
-    url(r'^snippets/$', userview.SnippetTest.as_view(), name="snippet-test"),
-    url(r'^snippets/(?P<pk>[0-9]+)/$', userview.SnippetDetail.as_view()),
+    #url(r'^sample-url/$', userview.index, name='index'),
+
+    url(r'^account/(?P<pk>.*)/$', userview.UserAccountList.as_view(), name="user.list"),
+    url(r'^account$', userview.UserAccount.as_view(), name="user.register"),
+    url(r'^profile/(?P<user_id>[0-9]+)/$', userview.UserProfile.as_view(), name="user.profile"),
+    url(r'^change_password/(?P<user_id>[0-9]+)/$', userview.AccountChangePassword.as_view(), name="change.password"),
 ]
 
 urlpatterns += internal_routers.urls
