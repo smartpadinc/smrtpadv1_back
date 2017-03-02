@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'user',
-    'properties'
+    'properties',
+    'utils'
 ]
 
 OAUTH2_PROVIDER = {
