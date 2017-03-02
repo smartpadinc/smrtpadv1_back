@@ -22,6 +22,7 @@ __pycache__
 
 user/migrations/*
 properties/migrations/*
+utils/migrations/*
 assets/*
 .env
 runapp

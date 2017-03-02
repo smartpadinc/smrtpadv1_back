@@ -5,13 +5,6 @@ from django.http import HttpResponse
 import logging
 logger = logging.getLogger(__name__)
 
-# Create your views here.
-def index(request):
-    #logger.debug("this is a debug message! love of my life")
-    #logger.error("this is an error message!! love of my life")
-    return render(request, 'index.html')
-    #return HttpResponse("Hello, world. You're at the polls index.")
-
 from user import models as mod
 from user import serializers as serializer
 from user import filters as filtr
