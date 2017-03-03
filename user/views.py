@@ -154,8 +154,6 @@ class AccountChangePassword(APIView):
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.Organization
     serializer_class = serializer.OrganizationSerializer
