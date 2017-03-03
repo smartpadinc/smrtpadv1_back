@@ -83,7 +83,7 @@ MIDDLEWARE = [
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'dev-api.smartpad.local:8096',
 )
