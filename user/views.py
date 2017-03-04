@@ -180,9 +180,6 @@ class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins
         return query
 
 
-
-
-
 """
 class UserViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = User
