@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -20,7 +21,8 @@ from rest_framework.views import APIView
 from django.contrib import admin
 admin.autodiscover()
 
-import string, random
+import string, random, requests
+
 
 class UserAccountList(APIView):
     """
@@ -135,10 +137,7 @@ class AccountChangePassword(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializer.AccountChangePasswordSerializer
 
-    def post(self, request, user_id, format=None):
-
-        if int(user_id) != int(request.user.id):
-            return Response({'responseMsg': 'Request failed. User mismatch.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, format=None):
 
         instance = User.objects.get(pk=request.user.id)
         srlzr = serializer.AccountChangePasswordSerializer(instance, data=request.data, partial=True)
@@ -152,6 +151,35 @@ class AccountChangePassword(APIView):
                 return Response({'responseMsg': "Invalid password.", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+from oauth2_provider.models import AccessToken
+class Auth(APIView):
+    serializer_class = serializer.AuthSerializer
+
+    def post(self, request):
+        if 'username' in request.data and 'password' in request.data:
+
+            user = authenticate(username=request.data['username'], password=request.data['password'])
+
+            if user is not None:
+                access_token = AccessToken.objects.create()
+                return Response({'responseMsg': "Successfully changed account password.", 'success': True}, status=status.HTTP_200_OK)
+            else:
+                return Response({'responseMsg': "Invalid username or password", 'success': False}, status=status.HTTP_200_OK)
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+class RevokeSession(APIView):
+    """
+        Endpoint for revoking user session
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializer.RevokeSessionSerializer
+
+    def post(self, request, pk=None):
+        pass
+        #r = requests.post("http://bugs.python.org", data={'number': 12524, 'type': 'issue', 'action': 'show'})
+
 
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.Organization

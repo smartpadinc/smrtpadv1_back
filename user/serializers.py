@@ -50,6 +50,14 @@ class AccountChangePasswordSerializer(serializers.ModelSerializer):
          model = User
          fields = ('password','new_password',)
 
+
+class AuthSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True, max_length=32)
+    password = serializers.CharField(required=True, max_length=32)
+
+class RevokeSessionSerializer(serializers.Serializer):
+    test = serializers.CharField(required=True, max_length=32)
+
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.Organization
