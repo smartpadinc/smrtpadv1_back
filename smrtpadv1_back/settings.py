@@ -59,6 +59,9 @@ REST_FRAMEWORK = {
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
     #'DEFAULT_PERMISSION_CLASSES': (
     #    'rest_framework.permissions.IsAuthenticated',
     #)
@@ -69,6 +72,8 @@ REST_FRAMEWORK_DOCS = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,16 +81,22 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware'
 ]
 
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    'dev-api.smartpad.local:8096',
+    'dev-api.smartpad.local',
+    '127.0.0.1:6000'
+)
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'PATCH',
+    'POST',
+    'PUT',
 )
 
 ROOT_URLCONF = 'smrtpadv1_back.urls'
@@ -111,7 +122,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'smrtpadv1_back.wsgi.application'
 
 # Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
