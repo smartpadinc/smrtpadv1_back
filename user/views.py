@@ -27,7 +27,6 @@ class UserAccountList(APIView):
         Endpoint for getting user account details
     """
     permission_classes = (IsAuthenticated,)
-    filter_fields = ('category', 'in_stock')
     serializer_class = serializer.UserAccountListSerializer
 
     def get(self, request, pk=None):
@@ -179,9 +178,6 @@ class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins
             query = mod.Organization.objects.all()
 
         return query
-
-
-
 
 
 """

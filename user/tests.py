@@ -34,7 +34,7 @@ class UserManagementTestCase(TestCase):
 
     def test_get_user_account(self):
         self.client.login(username='testuser', password='testing')
-        response = self.client.get(self.url['user'] + "//")
+        response = self.client.get(self.url['user'] + "/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_add_new_valid_account_authorized(self):
@@ -161,7 +161,7 @@ class UserManagementTestCase(TestCase):
 
     def test_get_user_profile(self):
         self.client.login(username='testuser', password='testing')
-        response = self.client.get(self.url['user'] + '/{}/'.format(str(self.user.id)) )
+        response = self.client.get(self.url['user'] + '/{}'.format(str(self.user.id)) )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
