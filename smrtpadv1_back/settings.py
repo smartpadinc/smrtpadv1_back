@@ -88,13 +88,10 @@ LOGOUT_URL = 'rest_framework:logout'
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    '192.168.1.50',
-    'dev.smartpad.local',
-    '127.0.0.1'
+    'dev.smartpad.local:8096',
 )
 CORS_ALLOW_METHODS = (
     'DELETE',
-    'OPTIONS',
     'GET',
     'PATCH',
     'POST',
