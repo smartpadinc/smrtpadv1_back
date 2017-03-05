@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from user import models as usermod
 # Create your tests here.
 
-class UserManagementTestCase(TestCase):
+class UserTestCase(TestCase):
     # initialiaze token/auth
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -133,7 +133,6 @@ class UserManagementTestCase(TestCase):
         self.client.login(username='testuser', password='testing')
         response = self.client.get(self.url['user'] + '/{}'.format(str(self.user.id)) )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
     def test_update_profile(self):
         self.client.login(username='testuser', password='testing')
