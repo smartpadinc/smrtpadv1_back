@@ -169,9 +169,16 @@ class Authenticate(APIView):
             user = authenticate(username=request.data['username'], password=request.data['password'])
 
             if user is not None:
+
                 # get the default application details e.g clien_id, client_secret
                 application = Application.objects.get(name="default")
+
+                # Set expiration - default to 30mins
                 expiration  = timezone.now() + timedelta(seconds=oauth2_settings['ACCESS_TOKEN_EXPIRE_SECONDS'])
+
+                # Delete previous access/refresh token
+                AccessToken.objects.filter(user=user, application=application).delete()
+                RefreshToken.objects.filter(user=user, application=application).delete()
 
                 access_token = AccessToken.objects.create(
                     user=user,
@@ -208,11 +215,24 @@ class RevokeSession(APIView):
         Endpoint for revoking user session
     """
     permission_classes = (IsAuthenticated,)
-    serializer_class = serializer.RevokeSessionSerializer
 
     def post(self, request, pk=None):
-        pass
-        #r = requests.post("http://bugs.python.org", data={'number': 12524, 'type': 'issue', 'action': 'show'})
+        user = User.objects.get(pk=request.user.id)
+
+        if user is not None:
+
+            # get the default application details e.g clien_id, client_secret
+            application = Application.objects.get(name="default")
+
+            # Delete all access/refresh token
+            AccessToken.objects.filter(user=user, application=application).delete()
+            RefreshToken.objects.filter(user=user, application=application).delete()
+
+            return Response({'success': True, 'responseMsg': "User successfully logout"}, status=status.HTTP_200_OK)
+
+        else:
+            return Response({'success': False, 'responseMsg': "User does not exists"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):

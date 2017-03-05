@@ -65,13 +65,6 @@ class UserManagementTestCase(TestCase):
         self.assertEqual(rd['last_name'], self.data['last_name'])
         self.assertEqual(response.data['success'], True)
 
-    # def test_add_new_valid_account_unauthorized(self):
-    #     self.data['username']   = 'Test2'
-    #     self.data['email']      = 'leoangelo.dia123@gmail.com'
-    #
-    #     response = self.client.post(self.url['user'], self.data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_add_new_valid_account_duplicate_email(self):
         self.client.login(username='testuser', password='testing')
 
