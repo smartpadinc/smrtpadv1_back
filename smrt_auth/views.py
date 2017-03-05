@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 # USER
-from user import serializers as serializer
+from smrt_auth import serializers as serializer
 
 # DRF
 #from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
