@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^account$', userview.UserAccount.as_view(), name="user.register"),
     url(r'^profile/(?P<user_id>[0-9]+)', userview.UserProfile.as_view(), name="user.profile"),
     url(r'^change_password$', userview.AccountChangePassword.as_view(), name="change.password"),
-    url(r'^auth$', userview.Auth.as_view(), name="user.auth"),
+    url(r'^auth$', userview.Authenticate.as_view(), name="user.auth"),
     url(r'^logout$', userview.RevokeSession.as_view(), name="user.logout"),
 ]
 
