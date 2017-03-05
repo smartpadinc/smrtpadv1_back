@@ -20,6 +20,7 @@ __pycache__
 *_nginx.conf
 *_uwsgi.ini
 
+smrt_auth/migrations/*
 user/migrations/*
 properties/migrations/*
 utils/migrations/*
