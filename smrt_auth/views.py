@@ -68,7 +68,7 @@ class Login(APIView):
                 try:
                     instance = UserProfile.objects.get(user_id=user.id)
                     srlzr = UserProfileSerializer(instance)
-                except UserProfile.DoesNotExist:
+                except User.DoesNotExist:
                     srlzr = None
 
                 data = {
