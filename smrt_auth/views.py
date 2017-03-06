@@ -7,6 +7,8 @@ from django.conf import settings
 
 # USER
 from smrt_auth import serializers as serializer
+from user.serializers import UserProfileSerializer
+from user.models import UserProfile
 
 # DRF
 #from oauth2_provider.ext.rest_framework import OAuth2Authentication, TokenHasReadWriteScope, TokenHasScope
@@ -62,11 +64,17 @@ class Login(APIView):
                     access_token=access_token
                 )
                 refresh_token.save()
+                
+                try:
+                    instance = UserProfile.objects.get(user_id=user.id)
+                    srlzr = UserProfileSerializer(instance)
+                except UserProfile.DoesNotExist:
+                    srlzr = None
 
                 data = {
-                    'access_token'  : access_token.token,
-                    'refresh_token' : refresh_token.token,
-                    'expires'       : oauth2_settings['ACCESS_TOKEN_EXPIRE_SECONDS']
+                    'access_token'      : access_token.token,
+                    'token_expiration'  : oauth2_settings['ACCESS_TOKEN_EXPIRE_SECONDS'],
+                    'user'              : srlzr.data if srlzr is not None else {}
                 }
 
                 return Response({'responseMsg': "Authentication successful!", 'success': True, 'data': data}, status=status.HTTP_200_OK)
