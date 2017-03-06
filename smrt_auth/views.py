@@ -74,7 +74,7 @@ class Login(APIView):
                 data = {
                     'access_token'      : access_token.token,
                     'token_expiration'  : oauth2_settings['ACCESS_TOKEN_EXPIRE_SECONDS'],
-                    'userinfo'          : srlzr.data if srlzr is not None else {}
+                    'userinfo'          : srlzr.data if srlzr is not None else None
                 }
 
                 return Response({'responseMsg': "Authentication successful!", 'success': True, 'data': data}, status=status.HTTP_200_OK)
