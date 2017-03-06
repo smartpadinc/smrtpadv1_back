@@ -70,3 +70,10 @@ class UserAuthTestCase(TestCase):
         })
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_user_info_must_be_included_on_login_response(self):
+        response = self.client.post(self.url['login'], self.data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['success'], True)
+        self.assertEqual(('user' in response.data['data']), True)
