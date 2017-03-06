@@ -64,11 +64,11 @@ class Login(APIView):
                     access_token=access_token
                 )
                 refresh_token.save()
-                
+
                 try:
                     instance = UserProfile.objects.get(user_id=user.id)
                     srlzr = UserProfileSerializer(instance)
-                except User.DoesNotExist:
+                except UserProfile.DoesNotExist:
                     srlzr = None
 
                 data = {
