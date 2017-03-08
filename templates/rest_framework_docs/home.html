@@ -38,7 +38,9 @@
               <div class="col-md-5">
                 <ul class="list-inline methods">
                   {% for method in endpoint.allowed_methods %}
-                    <li class="method {{ method|lower }}">{{ method }}</li>
+                    {% if method != "OPTIONS" %}
+                      <li class="method {{ method|lower }}">{{ method }}</li>
+                    {% endif %}
                   {% endfor %}
                     <li class="method plug"
                       data-toggle="modal"
