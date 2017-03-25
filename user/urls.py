@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^account$', userview.UserAccount.as_view(), name="user.register"),
     url(r'^profile/(?P<user_id>[0-9]+)', userview.UserProfile.as_view(), name="user.profile"),
     url(r'^change_password$', userview.AccountChangePassword.as_view(), name="change.password"),
+    url(r'^reset_password/inquiry$', userview.AccountResetPasswordInquiry.as_view(), name="reset.password")
 ]
 
 urlpatterns += internal_routers.urls

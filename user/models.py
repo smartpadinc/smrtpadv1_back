@@ -21,7 +21,7 @@ class UserProfile(models.Model):
     img_url             = models.TextField(null=True, blank=True, help_text="image filename")
     fb_url              = models.TextField(null=True, blank=True, help_text="facebook profile")
     date_created        = models.DateTimeField(auto_now_add=True, help_text="Date the record was created", blank=True, null=True)
-    last_modified_by    = models.ForeignKey(User,related_name="user_profile_last_updated", null=True, blank=True, help_text="User who last updated the profile")
+    last_modified_by        = models.ForeignKey(User, related_name="reset_password_last_updated", null=True, blank=True, help_text="User who last updated the profile")
     last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", blank=True, null=True)
 
 class Organization(models.Model):
@@ -40,3 +40,12 @@ class Organization(models.Model):
     date_created        = models.DateTimeField(auto_now_add=True, help_text="Date the record was created", blank=True, null=True)
     last_modified_by    = models.ForeignKey(User,related_name="organization_last_updated", null=True, blank=True, help_text="User who last updated the organization")
     last_modified       = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", blank=True, null=True)
+
+class AccountResetPassword(models.Model):
+    resetconfirmation_id    = models.AutoField(primary_key=True, editable=False)
+    user                    = models.ForeignKey(User,related_name="user_resetpassword", help_text="user_id", default="0000000")
+    confirmation_key        = models.CharField(max_length=50, help_text="Reset password confirmation key")
+    expire_on               = models.IntegerField(help_text="Expiration date in unixtimestamp format", blank=True, null=True)
+    status                  = models.CharField(max_length=1, db_index=True, default="A", choices=settings.OPT_STATUS, help_text="Active / Inactive / Deleted")
+    date_created            = models.DateTimeField(auto_now_add=True, help_text="Date the record was created", blank=True, null=True)
+    last_modified           = models.DateTimeField(auto_now=True, help_text="Date the record was last edited.", blank=True, null=True)

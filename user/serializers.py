@@ -53,6 +53,13 @@ class AccountChangePasswordSerializer(serializers.ModelSerializer):
          model = User
          fields = ('password','new_password',)
 
+class AccountResetPasswordSerializer(serializers.ModelSerializer):
+     email_address = serializers.CharField(required=True, max_length=32)
+
+     class Meta:
+         model = User
+         fields = ('email_address',)
+
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.Organization
