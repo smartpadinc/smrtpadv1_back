@@ -6,7 +6,8 @@ from rest_framework.test import APITestCase, APIClient, APIRequestFactory
 
 from django.contrib.auth.models import User
 from user import models as usermod
-# Create your tests here.
+
+import json
 
 class UserTestCase(TestCase):
     # initialiaze token/auth
@@ -137,14 +138,31 @@ class UserTestCase(TestCase):
     def test_update_profile(self):
         self.client.login(username='testuser', password='testing')
 
-        self.data['first_name'] = 'Leo'
-        self.data['last_name']  = 'Diaz'
+        self.data['first_name']             = 'Leo'
+        self.data['last_name']              = 'Diaz'
+
+        address = [
+            {'line1' : 'address line 1'},
+            {'line2' : 'address line 2'}
+        ]
 
         profile = usermod.UserProfile()
         profile.user_id     = self.user.id
         profile.user_type   = 1
         profile.first_name  = 'Leo'
-        profile.last_name   = 'Diaz'
+        profile.middle_name = 'L'
+        profile.birthdate   = '1991-01-01'
+        profile.mobile_no   = '6586954125'
+        profile.address     = json.dumps(address)
+        profile.city        = 'Makati'
+        profile.state       = 'Manila'
+        profile.country     = 'PH'
+        profile.zip_code    = '1234'
+        profile.identification_type = '1'
+        profile.identification_no   = '123456'
+        profile.img_url     = 'http://imgur.com/gallery/ggWm4'
+        profile.fb_url      = 'https://www.facebook.com/prinsipeleo'
+
         profile.save()
 
         response = self.client.patch(self.url['user_profile'] + "{}/".format(str(self.user.id)), self.data, format='json')
