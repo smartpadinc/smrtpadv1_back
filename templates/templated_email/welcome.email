@@ -1,0 +1,11 @@
+{% block subject %}My subject for {{username}}{% endblock %}
+{% block plain %}
+  Hi {{full_name}},
+
+
+ this is a test message
+  You just signed up for my website, using:
+      username: {{username}}
+
+  Thanks, you rock!
+{% endblock %}
