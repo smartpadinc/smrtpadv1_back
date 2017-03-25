@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from user import models as model
 
+import time
+
 class UserAccountListSerializer(serializers.ModelSerializer):
 
     # http://stackoverflow.com/questions/22264368/how-to-override-django-unique-error-message-for-username-in-custom-userchangef
@@ -14,6 +16,7 @@ class UserAccountListSerializer(serializers.ModelSerializer):
     #         "min_length": "Password too short.",
     #     },
     #)
+
     profile = serializers.SerializerMethodField('get_user_profile')
 
     def get_user_profile(self, obj):
