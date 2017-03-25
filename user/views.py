@@ -1,3 +1,5 @@
+from utils.email import SendEmail  as se
+from django.core.signing import Signer
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -25,10 +27,11 @@ from rest_framework.views import APIView
 
 from datetime import datetime, timedelta
 
-import logging, string, random, requests
+import logging, string, random, requests, time, hashlib
 logger = logging.getLogger(__name__)
 
 CHAR_POOL = string.ascii_letters + string.digits + string.punctuation
+SAFE_POOL = string.ascii_letters + string.digits
 
 class UserAccountList(APIView):
     """
@@ -156,6 +159,46 @@ class AccountChangePassword(APIView):
                 return Response({'responseMsg': "Invalid password.", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AccountResetPasswordInquiry(APIView):
+    """
+        Send reset password request
+    """
+    serializer_class = serializer.AccountResetPasswordSerializer
+
+    def post(self, request, format=None):
+
+        if 'email_address' in request.data:
+
+            """
+                Register resetpassword key to be sent on email if the user exists, else, ignore.
+                If there's pending/active reset password key and the user issued a reset password request
+                again, just update the most recent data.
+            """
+            try:
+                signer = Signer()
+                signed = signer.sign(''.join((random.choice(SAFE_POOL)) for x in range(20)))
+                user   = User.objects.get(email=request.data['email_address'])
+
+                obj, created = mod.AccountResetPassword.objects.update_or_create(
+                    user=user, status='A',
+                    defaults={'confirmation_key': signed},
+                )
+
+            except Exception:
+                pass
+
+            """
+                Send Email
+            """
+
+            se.displayCount("HELLO WORD")
+
+
+
+            return Response({'responseMsg': "We sent a reset password link to your email.", 'success': True}, status=status.HTTP_200_OK)
+
 
 class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     model = mod.Organization
