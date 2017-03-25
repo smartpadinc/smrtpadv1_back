@@ -20,10 +20,11 @@ class UserTestCase(TestCase):
         token.save()
 
         self.url = {
-            'user'                  : '/api/user/account',
-            'user_change_password'  : '/api/user/change_password',
-            'user_profile'          : '/api/user/profile/',
-            'organization'          : '/api/user/organization/',
+            'user'                   : '/api/user/account',
+            'user_change_password'   : '/api/user/change_password',
+            'user_profile'           : '/api/user/profile/',
+            'reset_password_inquiry' : '/api/user/reset_password/inquiry',
+            'organization'           : '/api/organization',
         }
         self.data = {
             'username'      : '',
@@ -138,8 +139,8 @@ class UserTestCase(TestCase):
     def test_update_profile(self):
         self.client.login(username='testuser', password='testing')
 
-        self.data['first_name']             = 'Leo'
-        self.data['last_name']              = 'Diaz'
+        self.data['first_name'] = 'Leo'
+        self.data['last_name']  = 'Diaz'
 
         address = [
             {'line1' : 'address line 1'},
@@ -168,3 +169,19 @@ class UserTestCase(TestCase):
         response = self.client.patch(self.url['user_profile'] + "{}/".format(str(self.user.id)), self.data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_reset_password_inquiry(self):
+          self.data['email_address'] = "testuser@test.com"
+          self.client.post(self.url['reset_password_inquiry'], self.data, format='json')
+
+          count = usermod.AccountResetPassword.objects.filter(user=self.user,status='A').count()
+
+          self.assertEqual(count, 1)
+
+    def test_reset_password_inquiry_invalid_user(self):
+          self.data['email_address'] = "testuser123@test.com"
+          self.client.post(self.url['reset_password_inquiry'], self.data, format='json')
+
+          count = usermod.AccountResetPassword.objects.filter(user=self.user,status='A').count()
+
+          self.assertEqual(count, 0)
