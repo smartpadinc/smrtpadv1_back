@@ -1,11 +1,12 @@
-{% block subject %}My subject for {{username}}{% endblock %}
-{% block plain %}
-  Hi {{full_name}},
+{% block subject %}Welcome to SmartPad!{% endblock %}
+{% block html %}
+  Hi {{ first_name }},
 
+  <p>Welcome to SmartPad</p>
 
- this is a test message
-  You just signed up for my website, using:
-      username: {{username}}
+  <p>Here is your temporary password, updated it as soon as possible: {{ password }}</p>
 
-  Thanks, you rock!
+  <p>Cheers,</p>
+  SmartPad
+
 {% endblock %}
