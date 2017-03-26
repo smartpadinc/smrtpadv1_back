@@ -1,12 +1,13 @@
 from templated_email import send_templated_mail
 
+DEFAULT_FROM_EMAIL = 'SmartPad <notifications@smartpad.ph>'
+
 class SendEmail:
 
-    def displayCount(name):
-        print(name)
-
-        # send_templated_mail(template_name='welcome',
-        #     from_email='SmartPad <notifications@smartpad.ph>',
-        #     recipient_list=['olivelaw.diaz@gmail.com','leo@crazyapp.cloud'],
-        #     context={'full_name': "OLIVE", "username": "olive.diaz"}
-        # )
+    def send(template, data):
+        send_templated_mail(template_name=template,
+            from_email      = data['from_email'] if hasattr(data, 'from_email') else DEFAULT_FROM_EMAIL,
+            recipient_list  = data['recipient_list'],
+            context         = data['context'],
+            create_link     = True
+        )
