@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'user',
     'properties',
     'utils',
-    'anymail'
+    'anymail',
+    'templated_email'
 ]
 
 OAUTH2_PROVIDER = {
@@ -243,6 +244,7 @@ TEMPLATED_EMAIL_TEMPLATE_DIR = 'templated_email/' #use '' for top level template
 TEMPLATED_EMAIL_FILE_EXTENSION = 'email'
 TEMPLATED_EMAIL_EMAIL_MESSAGE_CLASS='anymail.message.AnymailMessage'
 TEMPLATED_EMAIL_EMAIL_MULTIALTERNATIVES_CLASS='anymail.message.AnymailMessage'
+TEMPLATED_EMAIL_AUTO_PLAIN = False
 
 
 # Internationalization

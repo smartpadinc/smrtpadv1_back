@@ -1,4 +1,4 @@
-from utils.email import SendEmail  as se
+from utils.email import SendEmail  as emailSender
 from django.core.signing import Signer
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -100,6 +100,17 @@ class UserAccount(APIView):
                         # Remove password and csrfmiddlewaretoken in return data
                         request.data['password'], request.data['csrfmiddlewaretoken'] = None, None
 
+                        """
+                            Send Email
+                        """
+                        emailSender.send('welcome', {
+                            'recipient_list' : (request.data['email'],),
+                            'context': {
+                                'first_name': user.first_name,
+                                'password'  : random_password
+                            }
+                        })
+
                         return Response({'responseMsg': "Successfully Created!", 'data': request.data, 'success': True}, status=status.HTTP_201_CREATED)
                     else:
                         return Response({'responseMsg': 'Request failed due to field errors.', 'success': False, 'errors': srlzr.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -160,7 +171,6 @@ class AccountChangePassword(APIView):
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
-
 class AccountResetPasswordInquiry(APIView):
     """
         Send reset password request
@@ -186,16 +196,16 @@ class AccountResetPasswordInquiry(APIView):
                     defaults={'confirmation_key': signed},
                 )
 
+                """
+                    Send Email
+                """
+                emailSender.send('forgot-password', {
+                    'recipient_list' : (request.data['email_address'],),
+                    'context': {'confirmation_key':signed},
+                })
+
             except Exception:
                 pass
-
-            """
-                Send Email
-            """
-
-            se.displayCount("HELLO WORD")
-
-
 
             return Response({'responseMsg': "We sent a reset password link to your email.", 'success': True}, status=status.HTTP_200_OK)
 
