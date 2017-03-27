@@ -44,7 +44,8 @@ class Organization(models.Model):
 class AccountResetPassword(models.Model):
     resetconfirmation_id    = models.AutoField(primary_key=True, editable=False)
     user                    = models.ForeignKey(User,related_name="user_resetpassword", help_text="user_id", default="0000000")
-    confirmation_key        = models.CharField(max_length=50, help_text="Reset password confirmation key")
+    hash_key                = models.CharField(max_length=50, help_text="Reset password confirmation key", blank=True, null=True)
+    signed_key              = models.CharField(max_length=50, help_text="Reset password confirmation key", blank=True, null=True)
     expire_on               = models.IntegerField(help_text="Expiration date in unixtimestamp format", blank=True, null=True)
     status                  = models.CharField(max_length=1, db_index=True, default="A", choices=settings.OPT_STATUS, help_text="Active / Inactive / Deleted")
     date_created            = models.DateTimeField(auto_now_add=True, help_text="Date the record was created", blank=True, null=True)

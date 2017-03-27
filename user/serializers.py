@@ -60,6 +60,14 @@ class AccountResetPasswordSerializer(serializers.ModelSerializer):
          model = User
          fields = ('email_address',)
 
+class AccountResetPasswordConfirmSerializer(serializers.ModelSerializer):
+     password           = serializers.CharField(required=True, max_length=32)
+     confirmation_key   = serializers.CharField(required=True, max_length=50)
+
+     class Meta:
+         model = User
+         fields = ('password','confirmation_key',)
+
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = model.Organization

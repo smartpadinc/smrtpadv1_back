@@ -171,6 +171,31 @@ class AccountChangePassword(APIView):
         else:
             return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class AccountResetPasswordConfirm(APIView):
+    """
+        Reset password with confirmation_key
+    """
+    serializer_class = serializer.AccountResetPasswordConfirmSerializer
+
+    def post(self, request, format=None):
+        srlzr = serializer.AccountResetPasswordConfirmSerializer(data=request.data)
+
+        if srlzr.is_valid():
+
+            try:
+                signer = Signer()
+                signed_key   = signer.unsign(request.data['confirmation_key'])
+                confirmation = mod.AccountResetPassword.objects.get(signed_key=signed_key)
+
+                return Response({'responseMsg': "Successfully changed account password.", 'success': True}, status=status.HTTP_200_OK)
+
+            except Exception:
+                return Response({'responseMsg': "Invalid confirmation key", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({'responseMsg': 'Request failed due to field errors.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
 class AccountResetPasswordInquiry(APIView):
     """
         Send reset password request
@@ -188,12 +213,13 @@ class AccountResetPasswordInquiry(APIView):
             """
             try:
                 signer = Signer()
-                signed = signer.sign(''.join((random.choice(SAFE_POOL)) for x in range(20)))
+                rands  = ''.join((random.choice(SAFE_POOL)) for x in range(20))
+                signed = signer.sign(rands)
                 user   = User.objects.get(email=request.data['email_address'])
 
                 obj, created = mod.AccountResetPassword.objects.update_or_create(
                     user=user, status='A',
-                    defaults={'confirmation_key': signed},
+                    defaults={'hash_key': signed, 'signed_key': rands},
                 )
 
                 """
